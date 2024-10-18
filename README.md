@@ -1,24 +1,11 @@
-# CS408 - Lab9.2
+# Object Oriented - Ball Game
 
 ## Overview
 
-TODO: Write a project description
+This project helps demonstrate object oriented properties with JavaScript by implementing a game that consists of an "Evil" white ring thats controller by the player and is responsible for moving around the screen and eating all of the bouncing balls.
 
 ## Sources and Credits
 
-TODO: You must credit the sources and authors of any code, libraries, or other
-assets you use in your project. If you leave this section blank, your project
-will be considered in violation of the Academic Honesty policy unless you truly
-created everything from scratch with no outside help. If you need to use a
-source that you cannot credit (e.g. a classmate's work), you must get explicit
-permission from your instructor.
-
-A simple bulleted list below is sufficient. For example:
-
-- Bootstrap: https://getbootstrap.com/
-- jQuery: https://jquery.com/
-- Background image: https://unsplash.com/photos/...
-- Sound effects: https://freesound.org/people/...
-- Icons: https://fontawesome.com/
-- Fonts: https://fonts.google.com/
-- etc.
+- JavaScript Objects: https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/Basics
+- OO Programming: https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/Object-oriented_programming
+- Classes in JavaScript: https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/Classes_in_JavaScript

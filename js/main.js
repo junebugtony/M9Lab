@@ -6,6 +6,12 @@ const ctx = canvas.getContext("2d");
 const width = (canvas.width = window.innerWidth);
 const height = (canvas.height = window.innerHeight);
 
+// reference to ball_count element
+const ballCountElement = document.getElementById("ball_count");
+
+// variable to track ball count
+let ballCount = 0;
+
 // function to generate random number
 
 function random(min, max) {
@@ -18,14 +24,21 @@ function randomRGB() {
   return `rgb(${random(0, 255)},${random(0, 255)},${random(0, 255)})`;
 }
 
-class Ball {
-  constructor(x, y, velX, velY, color, size) {
+class Shape {
+  constructor(x, y, velX, velY) {
     this.x = x;
     this.y = y;
     this.velX = velX;
     this.velY = velY;
+  }
+}
+
+class Ball extends Shape {
+  constructor(x, y, velX, velY, color, size) {
+    super(x, y, velX, velY);
     this.color = color;
     this.size = size;
+    this.exists = true;
   }
 
   draw() {
@@ -58,7 +71,7 @@ class Ball {
 
   collisionDetect() {
     for (const ball of balls) {
-      if (!(this === ball)) {
+      if (this.exists && ball.exists && this !== ball) {
         const dx = this.x - ball.x;
         const dy = this.y - ball.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
@@ -69,6 +82,94 @@ class Ball {
       }
     }
   }
+}
+
+class EvilCircle extends Shape {
+  constructor(x, y) {
+    super(x, y, 20, 20);
+    this.color = "white";
+    this.size = 10;
+
+    window.addEventListener("keydown", (e) => {
+      switch (e.key) {
+        case "a":
+        case "ArrowLeft":
+          this.x -= this.velX;
+          break;
+        case "d":
+        case "ArrowRight":
+          this.x += this.velX;
+          break;
+        case "w":
+        case "ArrowUp":
+          this.y -= this.velY;
+          break;
+        case "s":
+        case "ArrowDown":
+          this.y += this.velY;
+          break;
+      }
+    });
+  }
+
+  draw() {
+    ctx.beginPath();
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = this.color;
+    ctx.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
+    ctx.stroke();
+  }
+
+  checkBounds() {
+    if (this.x + this.size >= width) {
+      this.x = width - this.size;
+    }
+
+    if (this.x - this.size <= 0) {
+      this.x = this.size;
+    }
+
+    if (this.y + this.size >= height) {
+      this.y = height - this.size;
+    }
+
+    if (this.y - this.size <= 0) {
+      this.y = this.size;
+    }
+  }
+
+  collisionDetect() {
+    for (const ball of balls) {
+      if (ball.exists) {
+        const dx = this.x - ball.x;
+        const dy = this.y - ball.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance < this.size + ball.size) {
+          ball.exists = false;
+          ballCount--;
+          ballCountElement.textContent = ballCount;
+
+          if (ballCount == 0) {
+            displayWinMessage();
+          }
+        }
+      }
+    }
+  }
+}
+
+function displayWinMessage() {
+  const winMessage = document.createElement('div');
+  winMessage.textContent = "You won!";
+  winMessage.style.position = "absolute";
+  winMessage.style.top = "50%";
+  winMessage.style.left = "50%";
+  winMessage.style.transform = "translate(-50%, -50%)";
+  winMessage.style.color = "white";
+  winMessage.style.fontSize = "48px";
+  winMessage.style.zIndex = 10;
+  document.body.appendChild(winMessage);
 }
 
 const balls = [];
@@ -87,16 +188,27 @@ while (balls.length < 25) {
   );
 
   balls.push(ball);
+  ballCount++;
+  ballCountElement.textContent = ballCount;
 }
+
+// evilCircle instance
+const evilCircle = new EvilCircle(random(0, width), random(0, height));
 
 function loop() {
   ctx.fillStyle = "rgba(0, 0, 0, 0.25)";
   ctx.fillRect(0, 0, width, height);
 
+  evilCircle.draw();
+  evilCircle.checkBounds();
+  evilCircle.collisionDetect();
+
   for (const ball of balls) {
-    ball.draw();
-    ball.update();
-    ball.collisionDetect();
+    if (ball.exists) {
+      ball.draw();
+      ball.update();
+      ball.collisionDetect();
+    }
   }
 
   requestAnimationFrame(loop);
